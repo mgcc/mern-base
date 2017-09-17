@@ -92,7 +92,7 @@ app.post(
   '/login',
   passport.authenticate('local'),
   (req, res) => {
-    re.json(req.user);
+    res.json(req.user);
   }
 );
 
