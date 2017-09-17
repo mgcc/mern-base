@@ -1,85 +1,33 @@
 import React, { Component } from 'react';
-import BookList from './components/BookList';
-import BookForm from './components/BookForm';
+import { BrowserRouter as Router, Route } from 'react-router-dom';
+
+// components
+import Header from './components/common/Header';
+
+// containers
+import HomePage from './containers/HomePage';
+import AuthorsPage from './containers/AuthorsPage';
+import BooksPage from './containers/BooksPage';
+import BookPage from './containers/BookPage';
 
 class App extends Component {
-  // Have to bring onsubmit function here since it has to refresh BookList Data
-
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      title: '',
-      author: '',
-      books: null
-    }
-
-    this.submitNewBook = this.submitNewBook.bind(this);
-    this.onChangeAuthor = this.onChangeAuthor.bind(this);
-    this.onChangeTitle = this.onChangeTitle.bind(this);
-    this.fetchBooks = this.fetchBooks.bind(this);
-  }
-
-  componentDidMount() {
-    this.fetchBooks();
-  }
-
-  // BookList functions
-  fetchBooks() {
-    fetch('http://localhost:3001/api/book/list')
-      .then(response => response.json())
-      .then(result => this.setState({ books: result }))
-      .catch(e => console.log(e));
-  }
-
-  // BookForm functions
-  submitNewBook(event) {
-    event.preventDefault();
-
-    const data = {
-      author: this.state.author,
-      title: this.state.title
-    }
-
-    fetch('http://localhost:3001/api/book/add', {
-      method: 'POST',
-      body: JSON.stringify(data),
-      headers: {
-        "Content-Type": "application/json"
-      },
-    })
-    .then(
-      (res) => { this.fetchBooks(); },
-      (e) => { console.log(e); }
-    );
-
-    this.setState({ author: '', title: '' });
-  }
-
-  onChangeAuthor(event) {
-    this.setState({ author: event.target.value });
-  }
-
-  onChangeTitle(event) {
-    this.setState({ title: event.target.value });
-  }
 
   render() {
 
     return (
-      <div className="App">
-        <h2>Welcome to the Library App</h2>
-        <BookForm
-          title={this.state.title}
-          author={this.state.author}
-          onChangeAuthor={this.onChangeAuthor}
-          onChangeTitle={this.onChangeTitle}
-          submitNewBook={this.submitNewBook}
-          />
-        <BookList
-          books={this.state.books}
-          />
-      </div>
+      <Router>
+        <div className="App">
+          <Header />
+
+          <Route exact={true} path="/" component={HomePage} />
+
+          <Route path="/authors" component={AuthorsPage} />
+          <Route path="/books" component={BooksPage} />
+
+          <Route path="/book/:bookId" component={BookPage} />
+
+        </div>
+      </Router>
     );
   }
 }
