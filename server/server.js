@@ -1,5 +1,5 @@
+
 const express = require('express');
-const bodyParser = require('body-parser');
 
 // Mongoose and DB
 const mongoose = require('mongoose');
@@ -11,8 +11,7 @@ mongoose.connect(DB_URL);
 
 // Instance Server
 const app = express();
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+
 // for CORS
 app.use(function(req, res, next) {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -25,8 +24,29 @@ app.use(function(req, res, next) {
 });
 
 // Models
-require('./models/Book');
+require('./models/index');
 const Book = mongoose.model('Book');
+
+// Passport Authentication
+const passport = require('passport');
+require('./passport')(passport);
+
+// Cookies and Session
+const cookieParser = require('cookie-parser');
+const session = require('express-session');
+app.use(session({
+  secret: 'this is the secret',
+  resave: true,
+  saveUninitialized: true
+}));
+app.use(cookieParser());
+app.use(passport.initialize());
+app.use(passport.session());
+
+// body parsing middleware
+const bodyParser = require('body-parser');
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: false }));
 
 // Routes
 app.get('/api/test', (req, res) => {
@@ -67,6 +87,26 @@ app.post('/api/book/add', (req, res) => {
     }
   });
 })
+
+app.post(
+  '/login',
+  passport.authenticate('local'),
+  (req, res) => {
+    re.json(req.user);
+  }
+);
+
+app.post(
+  '/logout',
+  (req, res) => {
+    req.logout();
+    res.send(200);
+  }
+);
+
+app.post('/isLoggedIn', (req, res) => {
+  res.send(req.isAuthenticated() ? req.user : null);
+});
 
 // Starting...
 const PORT = 3001;
