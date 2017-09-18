@@ -18,6 +18,12 @@ class App extends Component {
     this.state = {
       user: null
     }
+
+    this.setUser = this.setUser.bind(this);
+  }
+
+  setUser(user) {
+    this.setState({ user });
   }
 
   render() {
@@ -25,7 +31,7 @@ class App extends Component {
     return (
       <Router>
         <div className="App">
-          <Header user={this.state.user}/>
+          <Header user={this.state.user} setUser={this.setUser} />
 
           <Route exact={true} path="/" component={HomePage} />
 

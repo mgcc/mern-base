@@ -105,7 +105,7 @@ app.post(
 );
 
 app.post('/isLoggedIn', (req, res) => {
-  res.send(req.isAuthenticated() ? req.user : null);
+  res.send(req.isAuthenticated() ? req.user : {} );
 });
 
 // Starting...

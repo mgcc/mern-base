@@ -45,15 +45,42 @@ export class Header extends Component {
       })
     })
     .then(response => {
-      response.json().then(body => console.log(body));
+      response.json().then(body => {
+        if (body.username) {
+          console.log('User found: ')
+          console.log(body);
+          this.props.setUser(body);
+          this.close();
+        } else {
+          console.log('No user logged in');
+          this.props.setUser(null);
+        }
+      });
     })
 
     event.preventDefault();
   }
 
   isLoggedIn() {
-    fetch('http://localhost:3001/isLoggedIn')
-      .then(response => console.log(response));
+    fetch('http://localhost:3001/isLoggedIn', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      }
+    })
+    .then(response => {
+      response.json().then(body => {
+        if (body.username) {
+          console.log('User found: ')
+          console.log(body);
+          this.props.setUser(body);
+        } else {
+          console.log('No user logged in');
+          this.props.setUser(null);
+        }
+      });
+    });
   }
 
   onUsernameChange(event) {
@@ -67,8 +94,7 @@ export class Header extends Component {
   render () {
 
     const { user } = this.props;
-    console.log('User: ')
-    console.log(user)
+
 
     const { username, password } = this.state;
 
@@ -99,11 +125,12 @@ export class Header extends Component {
                 onClick={this.open}>
                 { user ? user.username : `Log In` }
               </NavItem>
-              { user &&
+              { user ?
                 <NavItem
                   eventKey={5}>
                   Log Out
-                </NavItem>
+                </NavItem> :
+                ''
               }
             </Nav>
           </Navbar.Collapse>
