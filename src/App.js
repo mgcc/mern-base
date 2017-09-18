@@ -12,12 +12,20 @@ import BookPage from './containers/BookPage';
 
 class App extends Component {
 
+  constructor(props) {
+    super(props);
+
+    this.state = {
+      user: null
+    }
+  }
+
   render() {
 
     return (
       <Router>
         <div className="App">
-          <Header />
+          <Header user={this.state.user}/>
 
           <Route exact={true} path="/" component={HomePage} />
 

@@ -5,7 +5,7 @@ class HomePage extends Component {
   render() {
 
     return (
-      <h2>Welcome to the Library Homepage!</h2>
+      <h2>Welcome to the Homepage!</h2>
     );
   }
 }

@@ -9,11 +9,19 @@ export class Header extends Component {
     super(props);
 
     this.state = {
-      showModal: false
+      showModal: false,
+      username: '',
+      password: ''
     }
 
     this.open = this.open.bind(this);
     this.close = this.close.bind(this);
+
+    this.login = this.login.bind(this);
+
+    this.onUsernameChange = this.onUsernameChange.bind(this);
+    this.onPasswordChange = this.onPasswordChange.bind(this);
+    this.isLoggedIn();
   }
 
   close() {
@@ -24,14 +32,52 @@ export class Header extends Component {
     this.setState({ showModal: true });
   }
 
+  login(event) {
+    fetch('http://localhost:3001/login', {
+      method: 'POST',
+      headers: {
+        'Accept': 'application/json',
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        username: this.state.username,
+        password: this.state.password
+      })
+    })
+    .then(response => {
+      response.json().then(body => console.log(body));
+    })
+
+    event.preventDefault();
+  }
+
+  isLoggedIn() {
+    fetch('http://localhost:3001/isLoggedIn')
+      .then(response => console.log(response));
+  }
+
+  onUsernameChange(event) {
+    this.setState({ username: event.target.value });
+  }
+
+  onPasswordChange(event) {
+    this.setState({ password: event.target.value });
+  }
+
   render () {
+
+    const { user } = this.props;
+    console.log('User: ')
+    console.log(user)
+
+    const { username, password } = this.state;
 
     return (
       <div>
         <Navbar collapseOnSelect>
           <Navbar.Header>
             <Navbar.Brand>
-              <a href="/">Library App</a>
+              <a href="/">HOME</a>
             </Navbar.Brand>
             <Navbar.Toggle />
           </Navbar.Header>
@@ -51,8 +97,14 @@ export class Header extends Component {
               <NavItem
                 eventKey={4}
                 onClick={this.open}>
-                Log In
+                { user ? user.username : `Log In` }
               </NavItem>
+              { user &&
+                <NavItem
+                  eventKey={5}>
+                  Log Out
+                </NavItem>
+              }
             </Nav>
           </Navbar.Collapse>
         </Navbar>
@@ -67,13 +119,20 @@ export class Header extends Component {
               <FormGroup>
                 <ControlLabel>Login form</ControlLabel>
                 <FormControl
+                  value={username}
+                  onChange={this.onUsernameChange}
                   placeholder="username"
                   />
                 <FormControl
+                  value={password}
+                  onChange={this.onPasswordChange}
                   placeholder="password"
                   />
               </FormGroup>
-              <Button type="submit">
+              <Button
+                type="submit"
+                onClick={this.login}
+                >
                 Submit
               </Button>
             </form>
