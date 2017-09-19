@@ -1,7 +1,7 @@
-const mongoose = require('mongoose');
-const passport = require('passport');
+const jwt = require('jsonwebtoken');
+const User = require('mongoose').model('User');
 const LocalStrategy = require('passport-local').Strategy;
-const User = mongoose.model('User');
+const passport = require('passport');
 
 module.exports = (passport) => {
   passport.serializeUser((user, done) => {
@@ -35,8 +35,20 @@ module.exports = (passport) => {
             return done(null, false);
           }
 
-          // Everything checks out, return successful user
-          return done(null, user);
+          // Everything checks out
+          const payload = {
+            sub: user._id
+          }
+
+          // create a token string
+          const token = jwt.sign(payload, 'secretphrase');
+          const data = {
+            username: user.username
+          }
+
+          return done(null, token, data);
+
+          // return done(null, user);
         }
       );
     }
